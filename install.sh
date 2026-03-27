@@ -3,6 +3,9 @@
 
 set -e
 
+# Garante que o script roda a partir do diretório do repositório
+cd "$(dirname "$0")"
+
 echo "=============================================="
 echo " Anti-Fraud Agent (AFA) - Instalador"
 echo "=============================================="

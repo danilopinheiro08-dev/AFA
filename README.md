@@ -22,20 +22,29 @@ Sistema de IA para análise proativa de fraudes em telecomunicações.
 
 ## Instalação Rápida
 
+### Um comando (Linux / Mac)
+
+```bash
+git clone https://github.com/danilopinheiro08-dev/AFA.git && cd AFA && chmod +x install.sh start.sh && ./install.sh
+```
+
+Depois configure sua chave e inicie:
+
+```bash
+# Edite backend/.env e coloque sua GROQ_API_KEY
+./start.sh
+```
+
+Acesse: http://localhost:5173
+
+---
+
 ### Windows
 ```
 1. Duplo clique em install.bat
 2. Configure GROQ_API_KEY em backend/.env
 3. Duplo clique em start.bat
 4. Acesse http://localhost:5173
-```
-
-### Linux / Mac
-```bash
-chmod +x install.sh start.sh
-./install.sh
-# Configure backend/.env com sua GROQ_API_KEY
-./start.sh
 ```
 
 ## Configuração do LLM
