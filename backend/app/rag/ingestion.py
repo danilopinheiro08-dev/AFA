@@ -37,7 +37,7 @@ def get_chroma_collection():
     return _collection
 
 
-def _chunk_dataframe(df: pd.DataFrame, chunk_size: int = 50) -> list[str]:
+def _chunk_dataframe(df: pd.DataFrame, chunk_size: int = 10) -> list[str]:
     """Converte linhas do DataFrame em chunks de texto para embedding."""
     chunks = []
     cols = df.columns.tolist()
@@ -70,7 +70,7 @@ def ingest_csv(file_path: str) -> dict:
 
     logger.info(f"CSV carregado: {len(df)} linhas, {len(df.columns)} colunas")
 
-    chunks = _chunk_dataframe(df, chunk_size=50)
+    chunks = _chunk_dataframe(df, chunk_size=10)
     model = get_embedding_model()
     collection = get_chroma_collection()
 
