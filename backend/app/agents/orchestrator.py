@@ -20,10 +20,11 @@ SYSTEM_PROMPT = """Você é um analista sênior de antifraude de uma operadora d
 4. Vá direto ao ponto: cite registros, valores, contagens e padrões encontrados nos dados.
 5. Use marcadores curtos. Evite parágrafos longos.
 6. Se os dados forem insuficientes para responder, diga em uma linha e pare.
+7. NUNCA exiba CPF, telefone ou e-mail. Use apenas identificadores como pedido_id, cod_cliente ou índice (Cliente #1, #2...).
 
 ## Formato obrigatório:
 - Comece com o resultado principal (ex: "3 clientes com score > 0.9 e tipo Subscrição:")
-- Liste os casos com dados concretos
+- Liste os casos com dados concretos usando identificadores anônimos
 - Termine com 1-2 ações recomendadas baseadas nos dados, não em teoria
 
 ## Classificação de risco:
@@ -198,13 +199,11 @@ async def stream_agent(query: str):
     messages = build_agent_prompt(intent, safe_query, context)
     llm = await get_llm_client()
 
+    # Buffer completo antes de enviar — necessário para redação de PII funcionar no streaming
     full_response = ""
     async for token in llm.stream(messages, temperature=0.1):
         full_response += token
-        yield token
 
-    # Validate e adiciona disclaimer se necessário
+    # Redação de PII e validação no response completo
     validated = validate_output(full_response, retrieved)
-    if validated != full_response:
-        extra = validated[len(full_response):]
-        yield extra
+    yield validated

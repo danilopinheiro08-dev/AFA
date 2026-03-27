@@ -37,6 +37,14 @@ OUT_OF_SCOPE_PATTERNS = [
     r"\b(religião|deus|oração)\b",
 ]
 
+# Perguntas conceituais/educativas que não devem ser respondidas pelo agente de dados
+CONCEPTUAL_PATTERNS = [
+    r"^o que (é|sao|são)\s+(fraude|antifraude|chargeback|blacklist|subscrição|clonagem)",
+    r"^(explique|explica|defina|define|conceitue)\s+",
+    r"^(como funciona|o que significa|qual (o conceito|a definição))",
+    r"^(me (ensine|explique|diga|fale sobre)|fale sobre o que é)",
+]
+
 # Padrões de PII para detectar/bloquear no prompt
 PII_PATTERNS = {
     "cpf": r"\b(?:\d{3}[\.\-]\d{3}[\.\-]\d{3}[\.\-]\d{2}|\d{11})\b",
@@ -68,6 +76,14 @@ def check_scope(query: str) -> bool:
             raise GuardrailViolation(
                 reason="Pergunta fora do escopo do sistema de antifraude.",
                 code="OUT_OF_SCOPE",
+            )
+
+    # Bloqueia perguntas conceituais/educativas — este agente analisa dados, não ensina conceitos
+    for pattern in CONCEPTUAL_PATTERNS:
+        if re.search(pattern, query_lower):
+            raise GuardrailViolation(
+                reason="Este agente analisa dados de fraude, não responde perguntas conceituais. Use o chat de suporte para dúvidas teóricas.",
+                code="CONCEPTUAL_QUERY",
             )
 
     # Queries genéricas curtas (< 10 chars) passam (ex: "oi", "olá")
