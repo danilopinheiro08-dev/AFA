@@ -110,12 +110,30 @@ def detect_pii(text: str) -> dict:
     return found
 
 
+def _mask_cpf(match: re.Match) -> str:
+    """Mascara CPF mantendo dígitos do meio: 091.570.184-09 → ***.570.184-**"""
+    raw = re.sub(r'[\.\-\s]', '', match.group())
+    if len(raw) == 11:
+        return f"***.{raw[3:6]}.{raw[6:9]}-**"
+    return "***.***.***-**"
+
+
+def _mask_phone(match: re.Match) -> str:
+    """Mascara telefone mantendo DDD: (51) 993520626 → (51) *****-****"""
+    raw = re.sub(r'[\s\(\)\-]', '', match.group())
+    digits = re.sub(r'^\+?55', '', raw)
+    if len(digits) >= 10:
+        ddd = digits[:2]
+        return f"({ddd}) *****-****"
+    return "(**) *****-****"
+
+
 def redact_pii(text: str) -> str:
-    """Substitui PII por placeholders."""
-    result = text
-    for pii_type, pattern in PII_PATTERNS.items():
-        placeholder = f"[{pii_type.upper()}_REDACTED]"
-        result = re.sub(pattern, placeholder, result)
+    """Pseudonimiza PII: CPF e telefone ficam mascarados (útil para o analista localizar no sistema).
+    Email é removido completamente."""
+    result = re.sub(PII_PATTERNS["cpf"], _mask_cpf, text)
+    result = re.sub(PII_PATTERNS["telefone"], _mask_phone, result)
+    result = re.sub(PII_PATTERNS["email"], "[email omitido]", result)
     return result
 
 
