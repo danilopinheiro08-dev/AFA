@@ -131,9 +131,13 @@ def check_prompt_injection(query: str) -> bool:
 def validate_output(response: str, context_chunks: list[dict]) -> str:
     """
     Valida o output do LLM.
+    - Redige PII do output antes de exibir.
     - Se não há dados de contexto, alerta sobre possível alucinação.
     - Adiciona disclaimer se necessário.
     """
+    # Redige PII do output do LLM
+    response = redact_pii(response)
+
     if not context_chunks:
         disclaimer = (
             "\n\n⚠️ **Aviso:** Esta resposta foi gerada sem dados da base local. "

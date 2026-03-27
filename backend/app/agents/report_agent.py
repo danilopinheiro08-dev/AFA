@@ -73,7 +73,7 @@ async def generate_report(query: str) -> dict:
     report_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     # RAG retrieval
-    retrieved = retrieve(query, top_k=15)
+    retrieved = retrieve(query, top_k=settings.top_k_results)
     context = format_context(retrieved)
     sources = list({item["source_file"] for item in retrieved})
 
