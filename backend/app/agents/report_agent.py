@@ -78,36 +78,33 @@ async def generate_report(query: str) -> dict:
     sources = list({item["source_file"] for item in retrieved})
 
     # Prompt para relatório
-    report_prompt = f"""Gere um relatório executivo completo de análise de antifraude com as seguintes seções:
+    report_prompt = f"""Gere um relatório executivo de antifraude baseado EXCLUSIVAMENTE nos dados abaixo.
+Sem introduções, sem explicações teóricas. Apenas fatos dos dados.
 
-## 1. Sumário Executivo
-- Visão geral dos achados principais (2-3 parágrafos)
-- Nível de risco geral: 🔴 Alto / 🟡 Médio / 🟢 Baixo
+## Nível de Risco Geral: [🔴 Alto / 🟡 Médio / 🟢 Baixo] — decida com base nos dados
 
-## 2. Principais Achados
-- Liste os padrões anômalos detectados
-- Inclua evidências dos dados
+## Achados Principais
+- [bullet com números concretos dos dados]
 
-## 3. Tipificação de Fraudes
-- Classifique os tipos de fraude identificados
-- Frequência e impacto por tipo
+## Distribuição por Tipo de Fraude
+- [tipo]: [contagem] casos
 
-## 4. Análise de Impacto
-- Estimativa de custo/prejuízo quando disponível
-- Clientes/segmentos mais afetados
+## Top Casos (maior score/risco)
+- [identificador anonimizado] | score: X | tipo: Y | histórico: Z fraudes
 
-## 5. Recomendações
-- Ações imediatas sugeridas
-- Melhorias no monitoramento
-- Regras sugeridas para o cockpit
+## Regiões com Maior Incidência
+- [região]: [contagem]
 
-## Pergunta base:
-{query}
+## Ações Recomendadas
+1. [ação específica baseada nos dados]
+2. [ação específica baseada nos dados]
+3. [ação específica baseada nos dados]
 
-## Dados disponíveis:
-{context}
+---
+Pergunta original: {query}
 
-Use markdown para formatação. Seja específico e baseie-se exclusivamente nos dados fornecidos."""
+Dados:
+{context}"""
 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
