@@ -1,7 +1,8 @@
 #!/bin/bash
-# AFA - Anti-Fraud Agent Installer (Linux/Mac)
 
-set -e
+# ==============================================
+# Anti-Fraud Agent (AFA) - Instalador
+# ==============================================
 
 # Garante que o script roda a partir do diretório do repositório
 cd "$(dirname "$0")"
@@ -9,64 +10,57 @@ cd "$(dirname "$0")"
 echo "=============================================="
 echo " Anti-Fraud Agent (AFA) - Instalador"
 echo "=============================================="
-echo
 
-# Check Python
+# Configurar diretório temporário para evitar Erro 28 (/tmp cheio)
+export TMPDIR="$HOME/.cache/afa_tmp"
+export PIP_CACHE_DIR="$HOME/.cache/pip"
+mkdir -p "$TMPDIR"
+
+# Verificar dependências
 if ! command -v python3 &> /dev/null; then
-    echo "[ERRO] Python3 não encontrado. Instale com: sudo apt install python3 python3-venv"
+    echo "[ERRO] Python 3 não encontrado."
     exit 1
 fi
 
-# Check Node
 if ! command -v node &> /dev/null; then
-    echo "[ERRO] Node.js não encontrado. Instale em: https://nodejs.org"
+    echo "[ERRO] Node.js não encontrado."
     exit 1
 fi
 
 echo "[OK] Python e Node.js encontrados"
-echo
 
-# Backend
+# 1. Backend
+echo ""
 echo "[1/4] Configurando ambiente Python..."
 cd backend
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt -q
-echo "[OK] Dependências instaladas"
-
-if [ ! -f .env ]; then
-    cp .env.example .env
-    echo "[AVISO] Arquivo .env criado. Configure sua GROQ_API_KEY em backend/.env"
-fi
+pip install --upgrade pip -q
+# Usar TMPDIR explicitamente para segurança
+TMPDIR="$TMPDIR" pip install -r requirements.txt -q
 cd ..
 
-# Frontend
-echo
-echo "[2/4] Instalando dependências frontend..."
+# 2. Frontend
+echo ""
+echo "[2/4] Instalando dependências do Frontend (isso pode levar uns minutos)..."
 cd frontend
 npm install --silent
 cd ..
-echo "[OK] Frontend configurado"
 
-# Data dirs
-echo
-echo "[3/4] Criando pastas de dados..."
-mkdir -p backend/data/{csv,chroma,reports,blacklist}
-echo "[OK] Estrutura criada"
+# 3. Data dirs
+echo ""
+echo "[3/4] Criando diretórios de dados..."
+mkdir -p backend/data/csv
+mkdir -p backend/data/chroma
+mkdir -p backend/data/reports
+mkdir -p backend/data/blacklist
 
-# Ollama
-echo
-echo "[4/4] Verificando Ollama (opcional)..."
-if command -v ollama &> /dev/null; then
-    echo "[OK] Ollama encontrado"
-else
-    echo "[INFO] Ollama não encontrado. Instale em https://ollama.com para LLM 100% local."
-fi
-
-echo
-echo "=============================================="
-echo " Instalação concluída!"
-echo " Execute: ./start.sh"
-echo
-echo " Configure sua GROQ_API_KEY em: backend/.env"
-echo "=============================================="
+# 4. Finalização
+echo ""
+echo "[4/4] Concluído!"
+echo "----------------------------------------------"
+echo "Para iniciar a aplicação:"
+echo "1. Configure o arquivo 'backend/.env' (veja .env.example)"
+echo "2. Execute './start.sh'"
+echo "----------------------------------------------"
+echo "Nota: Se o sistema reclamar de falta de espaço, agora ele usa $HOME/.cache/afa_tmp."
