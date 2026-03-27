@@ -22,30 +22,46 @@ Sistema de IA para análise proativa de fraudes em telecomunicações.
 
 ## Instalação Rápida
 
-### Um comando (Linux / Mac)
+### Windows — Instalador automático (recomendado)
+
+**Opção A: `.exe` gerado previamente**
+```
+1. Duplo clique em AFA-Setup.exe
+2. Aguarde ~5 minutos (instala Python, Node, dependências)
+3. Cole sua GROQ_API_KEY quando solicitado
+4. Sistema inicia automaticamente
+```
+
+**Opção B: PowerShell (sem precisar gerar .exe)**
+```powershell
+# Com a chave já em mãos:
+powershell -ExecutionPolicy Bypass -File setup.ps1 -GroqKey "gsk_suachave"
+
+# Ou interativo (pergunta a chave durante o setup):
+powershell -ExecutionPolicy Bypass -File setup.ps1
+```
+
+O script instala Git, Python 3.11 e Node.js automaticamente via `winget` se não estiverem presentes, e cria um atalho na Área de Trabalho.
+
+**Gerar o AFA-Setup.exe** (rodar uma vez na máquina do desenvolvedor):
+```powershell
+powershell -ExecutionPolicy Bypass -File build-exe.ps1
+```
+
+---
+
+### Linux / Mac
 
 ```bash
 git clone https://github.com/danilopinheiro08-dev/AFA.git && cd AFA && chmod +x install.sh start.sh && ./install.sh
 ```
 
-Depois configure sua chave e inicie:
-
 ```bash
-# Edite backend/.env e coloque sua GROQ_API_KEY
+# Edite backend/.env com sua GROQ_API_KEY e inicie:
 ./start.sh
 ```
 
 Acesse: http://localhost:5173
-
----
-
-### Windows
-```
-1. Duplo clique em install.bat
-2. Configure GROQ_API_KEY em backend/.env
-3. Duplo clique em start.bat
-4. Acesse http://localhost:5173
-```
 
 ## Configuração do LLM
 
