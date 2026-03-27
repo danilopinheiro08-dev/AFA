@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     chunk_size: int = 500
     chunk_overlap: int = 50
-    top_k_results: int = 5
+    top_k_results: int = 3
 
     # CORS
     allowed_origins: str = "http://localhost:5173,http://localhost:3000"
