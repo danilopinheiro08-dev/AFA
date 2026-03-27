@@ -9,7 +9,7 @@ echo
 # Backend
 cd "$BASE_DIR/backend"
 source venv/bin/activate
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload &
 BACKEND_PID=$!
 echo "[OK] Backend iniciado (PID: $BACKEND_PID)"
 

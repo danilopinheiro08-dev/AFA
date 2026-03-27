@@ -14,7 +14,7 @@ Sistema de IA para análise proativa de fraudes em telecomunicações.
 | Componente | Tecnologia |
 |---|---|
 | Backend | FastAPI + Python 3.11 |
-| LLM (padrão) | Groq API (llama-3.1-70b) |
+| LLM (padrão) | Groq API (llama-3.3-70b-versatile) |
 | LLM (local) | Ollama (qwen2.5:7b) |
 | RAG | ChromaDB + sentence-transformers (PT-BR) |
 | Frontend | React + Vite + TypeScript |
@@ -53,7 +53,7 @@ Acesse: http://localhost:5173
 ```env
 LLM_PROVIDER=groq
 GROQ_API_KEY=gsk_sua_chave_aqui
-GROQ_MODEL=llama-3.1-70b-versatile
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
 Obtenha sua chave grátis em: https://console.groq.com
 

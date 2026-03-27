@@ -5,7 +5,7 @@ echo Iniciando Anti-Fraud Agent...
 echo.
 
 :: Backend
-start "AFA - Backend" cmd /k "cd backend && venv\Scripts\activate && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+start "AFA - Backend" cmd /k "cd backend && venv\Scripts\activate && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
 
 :: Aguarda backend iniciar
 timeout /t 4 /nobreak >nul

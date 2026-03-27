@@ -39,7 +39,7 @@ OUT_OF_SCOPE_PATTERNS = [
 
 # Padrões de PII para detectar/bloquear no prompt
 PII_PATTERNS = {
-    "cpf": r"\b\d{3}[\.\-]?\d{3}[\.\-]?\d{3}[\.\-]?\d{2}\b",
+    "cpf": r"\b(?:\d{3}[\.\-]\d{3}[\.\-]\d{3}[\.\-]\d{2}|\d{11})\b",
     "telefone": r"\b(\+55\s?)?(\(?\d{2}\)?\s?)(\d{4,5}[\-\s]?\d{4})\b",
     "email": r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b",
 }

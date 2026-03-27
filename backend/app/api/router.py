@@ -62,19 +62,23 @@ async def chat_stream_endpoint(message: str):
 # UPLOAD ENDPOINT
 # ─────────────────────────────────────────────
 
+MAX_CSV_BYTES = 50 * 1024 * 1024  # 50 MB
+
 @router.post("/upload", response_model=UploadResponse, tags=["data"])
 async def upload_csv(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
     """Faz upload de um CSV e o ingere na base vetorial."""
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Apenas arquivos .csv são aceitos.")
 
+    content = await file.read()
+    if len(content) > MAX_CSV_BYTES:
+        raise HTTPException(status_code=413, detail="Arquivo muito grande. Máximo permitido: 50MB.")
+
     csv_dir = Path(settings.csv_dir)
     csv_dir.mkdir(parents=True, exist_ok=True)
     dest = csv_dir / file.filename
 
-    with dest.open("wb") as f:
-        shutil.copyfileobj(file.file, f)
-
+    dest.write_bytes(content)
     logger.info(f"Arquivo salvo: {dest}")
 
     try:
@@ -172,22 +176,27 @@ async def health():
 # LOCAL PATH INGESTION ENDPOINT
 # ─────────────────────────────────────────────
 
+_BLOCKED_NAMES = {'.env', 'passwd', 'shadow', 'authorized_keys', 'id_rsa', 'id_ed25519', 'secrets'}
+
 @router.post("/ingest-path", response_model=UploadResponse, tags=["data"])
 async def ingest_from_path(req: LocalPathRequest):
     """
     Ingere um CSV a partir de um caminho local do sistema de arquivos.
     Ex: { "path": "/home/user/Downloads/fraudes.csv" }
     """
-    path = Path(req.path.strip())
+    path = Path(req.path.strip()).resolve()
+
+    if path.suffix.lower() != ".csv":
+        raise HTTPException(status_code=400, detail="Apenas arquivos .csv são aceitos.")
+
+    if path.name.lower().lstrip('.') in _BLOCKED_NAMES or path.name.startswith('.'):
+        raise HTTPException(status_code=403, detail="Acesso negado a este arquivo.")
 
     if not path.exists():
         raise HTTPException(
             status_code=404,
             detail=f"Arquivo não encontrado: {path}. Verifique o caminho completo."
         )
-
-    if path.suffix.lower() != ".csv":
-        raise HTTPException(status_code=400, detail="Apenas arquivos .csv são aceitos.")
 
     # Copia para a pasta de dados do sistema (opcional — mantém o original e cria link)
     csv_dir = Path(settings.csv_dir)
